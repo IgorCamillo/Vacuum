@@ -1,4 +1,4 @@
-package me.rick.vaccum;
+package me.rick.vacuum;
 
 import java.util.ArrayList;
 import java.util.UUID;
