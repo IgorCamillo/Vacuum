@@ -10,6 +10,7 @@ import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -30,6 +31,8 @@ public class Main extends JavaPlugin implements Listener {
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent e) {
 		Player p = e.getPlayer();
+		if ((e.getAction() == Action.RIGHT_CLICK_AIR) || (e.getAction() == Action.RIGHT_CLICK_BLOCK)) {
+		if (p.hasPermission("vacuum.use")) {
 		if (p.getItemInHand().getType() == Material.ENDER_PEARL) {
 			e.setCancelled(true);
 			p.updateInventory();
@@ -89,9 +92,10 @@ public class Main extends JavaPlugin implements Listener {
 				runCooldown(p);
 				}
 			}
-			
 			}
 			}
+		}
+		}
 		}
 	}
 	
