@@ -23,16 +23,16 @@ public class Main extends JavaPlugin implements Listener {
 		Bukkit.getServer().getPluginManager().registerEvents(this, this);
 	}
 	
-	ArrayList<UUID> cooldown = new ArrayList<UUID>();
-	ArrayList<UUID> vector = new ArrayList<UUID>();
+	private ArrayList<UUID> cooldown = new ArrayList<UUID>();
+	private ArrayList<UUID> vector = new ArrayList<UUID>();
 	
-	int distance = 10;
+	private int distance = 10;
 	
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent e) {
 		Player p = e.getPlayer();
-		if ((e.getAction() == Action.RIGHT_CLICK_AIR) || (e.getAction() == Action.RIGHT_CLICK_BLOCK)) {
-		if (p.hasPermission("vacuum.use")) {
+		if(e.getAction().name().contains("RIGHT")){
+		if (p.hasPermission("vacuum.use") || p.isOp()) {
 		if (p.getItemInHand().getType() == Material.ENDER_PEARL) {
 			e.setCancelled(true);
 			p.updateInventory();
