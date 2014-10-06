@@ -23,6 +23,7 @@ public class Main extends JavaPlugin implements Listener {
 		Bukkit.getServer().getPluginManager().registerEvents(this, this);
 	}
 	
+	private Map<UUID, Integer> getUsing = new HashMap<UUID, Integer>();
 	private ArrayList<UUID> cooldown = new ArrayList<UUID>();
 	private ArrayList<UUID> vector = new ArrayList<UUID>();
 	
@@ -31,79 +32,43 @@ public class Main extends JavaPlugin implements Listener {
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent e) {
 		Player p = e.getPlayer();
-		if(e.getAction().name().contains("RIGHT")){
-		if (p.hasPermission("vacuum.use") || p.isOp()) {
-		if (p.getItemInHand().getType() == Material.ENDER_PEARL) {
-			e.setCancelled(true);
-			p.updateInventory();
-			
-			if (cooldown.contains(p.getUniqueId())) return;
-			
-			ArrayList<Entity> entityList = new ArrayList<Entity>();
-			
-			for (int i = 0; i < distance+1; i++) {
-			for (Entity entity : p.getNearbyEntities(i, i*2, i)) {
-				entityList.add(entity);
-			}
-			if (!entityList.isEmpty()) {
-				break;
-			}
-			}
-			
-			if (!entityList.isEmpty()) {
-			
-			Entity entityTarget = null;
-			
-			if (entityList.get(0) != null) {
-				entityTarget = entityList.get(0);
-			}
-			
-			if (entityTarget != null) {
-			
-			int distanceY = 0;
-			
-			if (p.getLocation().getY() > entityTarget.getLocation().getY()) {
-				distanceY = (int)p.getLocation().getY()-(int)entityTarget.getLocation().getY();
-			}else{
-				distanceY = (int)entityTarget.getLocation().getY()-(int)p.getLocation().getY();
-			}
-			
-			int distance = (int) p.getLocation().distance(entityTarget.getLocation());
-			
-			distance = distance-distanceY;
-			
-			if (entityTarget instanceof Item) {
-				entityTarget.setVelocity(p.getLocation().toVector().subtract(entityTarget.getLocation().toVector()).normalize());
-				runCooldown(p);
-			}else{
-				if (!vector.contains(entityTarget.getUniqueId())) {
-				if ((distance < 2) && (distanceY >= 3)) {
-					entityTarget.setVelocity(new Vector(0, 2, 0));
-					vector.add(entityTarget.getUniqueId());
-					runCooldown(p);
-					return;
-				}
-				if ((distanceY == 0) && (distance < 2)) {
-					entityTarget.teleport(p.getWorld().getHighestBlockAt(p.getLocation()).getLocation());
-					runCooldown(p);
-					return;
-				}
-				entityTarget.setVelocity(p.getLocation().toVector().subtract(entityTarget.getLocation().toVector()).setY(distanceY).normalize());
-				runCooldown(p);
+		if (e.getAction().name().contains("RIGHT")) {
+			if (p.hasPermission("vacuum.use") || p.isOp()) {
+				if (p.getItemInHand().getType() == Material.ENDER_PEARL) {
+					e.setCancelled(true);
+					p.updateInventory();
+
+					if (cooldown.contains(p.getUniqueId()))
+						return;
+
+					for (Entity entity : p.getNearbyEntities(distance, distance, distance)) {
+						Entity outroEntity = entity;
+						Location de = outroEntity.getLocation();
+						Location para = p.getLocation();
+
+						de.setY(de.getY() + 0.5D);
+						
+						Vector v = p.getVelocity();
+						
+						//Depois irei calcular os vetores estou com preguiça :/
+						
+						if ((outroEntity instanceof Player)) {
+							outroEntity.setVelocity(v);
+						} else {
+							outroEntity.setVelocity(v);
+						}
+
+						if (!getUsing.containsKey(p.getUniqueId()) {
+							getUsing.put(p.getUniqueId(), 1);
+						 } else {
+							getUsing.put(p.getUniqueId(), (getUsing.get(p.getUniqueId())).intValue() + 1);
+						}
+						  if ((getUsing.containsKey(p.getUniqueId())) && (getUsing.get(p.getUniqueId()) >= 2) {
+							runCooldown.(p);
+						}
+					}
 				}
 			}
-			}
-			}
-		}
-		}
-		}
-	}
-	
-	
-	@EventHandler
-	public void onEntityDamage(EntityDamageEvent e) {
-		if(vector.contains(e.getEntity().getUniqueId()) && (e.getCause() == DamageCause.FALL)) {
-			vector.remove(e.getEntity().getUniqueId());
 		}
 	}
 	
@@ -113,6 +78,6 @@ public class Main extends JavaPlugin implements Listener {
 			public void run() {
 				cooldown.remove(p.getUniqueId());
 			}
-		}, 10L);
+		}, 20*12L);
 	}
 }
